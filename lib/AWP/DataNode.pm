@@ -1,6 +1,6 @@
-package DataNode;
+package AWP::DataNode;
 
-use base GenericNode;
+use base AWP::GenericNode;
 
 use strict;
 

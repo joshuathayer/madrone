@@ -1,6 +1,6 @@
-package BindingNode;
+package AWP::BindingNode;
 
-use base GenericNode;
+use base AWP::GenericNode;
 
 use strict;
 

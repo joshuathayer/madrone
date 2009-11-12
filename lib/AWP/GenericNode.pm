@@ -1,4 +1,4 @@
-package GenericNode;
+package AWP::GenericNode;
 
 use strict;
 use Data::Dumper;

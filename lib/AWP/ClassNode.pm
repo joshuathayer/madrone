@@ -1,6 +1,6 @@
-package ClassNode;
+package AWP::ClassNode;
 
-use base GenericNode;
+use base AWP::GenericNode;
 
 use strict;
 
