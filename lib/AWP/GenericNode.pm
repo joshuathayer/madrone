@@ -35,5 +35,4 @@ sub walk {
 	return join('',@{$self->{out}});
 }
 
-
 1;

@@ -8,7 +8,6 @@ sub new {
 	my $class = shift;
 
 	my $self = $class->SUPER::new();
-	print Dumper $self;
 
 	$self->{type} = "data";
 
