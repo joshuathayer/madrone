@@ -20,19 +20,30 @@ sub reset {
 	$self->{out} = [];
 }
 
-sub walk {
-	my $self = shift;
-	my $context = shift;
+# you can give me scalars to stick and beginning and end of my return scalar
+sub walk_and_collect {
+	my ($self, $context, $cb, $first, $last) = @_;
 
-	# this foreach means we can't in-place modify our tree...
+	my $on = 0; my $seen = scalar(@{$self->{nodes}}); my @out;
+
 	foreach my $n (@{$self->{nodes}}) {
-		#print Dumper $n;
-		#print "-" x 30;
-		#print "\n\n";
-		push (@{$self->{out}}, $n->walk($context));
+		$n->walk($context, sub {
+			my $dat = shift;
+
+			$out[$on] = $dat;
+			$on += 1;
+			$seen -= 1;
+
+			if ($seen == 0) {
+				$cb->( join('', $first, @out, $last) );
+			}
+		});
 	}
 
-	return join('',@{$self->{out}});
 }
 
+sub walk {
+	my ($self, $context, $cb) = @_;
+	$self->walk_and_collect($context, $cb);
+}
 1;

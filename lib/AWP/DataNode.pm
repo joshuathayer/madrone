@@ -23,12 +23,12 @@ sub setData {
 }
 
 sub walk {
-	my $self = shift;
+	my ($self, $context, $cb) = @_;
 
 	# we'll never have nodes of our own to walk
 	# maybe we will want a special i18n node!
 	
-	return $self->{data};
+	$cb->($self->{data});
 }
 
 1;

@@ -26,12 +26,11 @@ sub setBindVar {
 }
 
 sub walk {
-	my $self = shift;
-	my $context = shift;
+	my ($self, $context, $cb) = @_;
 
 	my $v = $context->{bindings}->{$self->{obj}}->{$self->{var}};
 
-	return $v;
+	$cb->($v);
 }
 
 1;

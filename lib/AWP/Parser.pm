@@ -157,12 +157,12 @@ sub parsefile {
 }
 
 sub walk {
-	my $self = shift;
-	my $context = shift;
+	my ($self, $context, $cb) = @_;
 	
-	my $r = $self->{root}->walk($context);
-	$self->{root}->reset();
-	return $r;
+	my $r = $self->{root}->walk($context, sub {
+		$cb->(@_);
+		$self->{root}->reset();
+	});
 }
 
 1;
