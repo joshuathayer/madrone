@@ -1,5 +1,3 @@
-use lib ('/Users/joshua/projects/awp/lib');
-
 use strict;
 
 use Data::Dumper;
