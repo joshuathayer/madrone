@@ -151,8 +151,11 @@ sub includeMods {
 
 	foreach my $m (@{$self->{mods}}) {
 		($m) = $m =~ /(.*)/;
-		require $path.'/'.$m;
+		require $path.'/'.$m;	# check for errors: there will be some!
+		# probably want to eval { } this... XXX
 	}
+
+	return 1;
 }
 
 sub parsefile {

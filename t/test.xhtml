@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:left="http://leftweb.net"
+	xmlns:f="http://leftwen.net/forms"
+>
 <head>
 <title>Sample XHTML Document</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -12,12 +16,22 @@
 <left:AWPTest.yes>
 
   <left:AWPTest.no>
-	this will not show up!
+	In the rendered document, this won't show up. Maybe it would say "you're not logged in!"
   </left:AWPTest.no>
-  
+	<br />
   Hey, you are <f:first_name>joshua</f:first_name> <f:last_name>thayer</f:last_name>!
-
+<br />
+<b>HELLO!!!!</b>
 </left:AWPTest.yes>
+<table>
+<left:AWPTest.rows>
+<tr><td>id</td><td><rows:id>420</rows:id></td></tr>
+<tr><td>id</td><td><rows:id>420</rows:id></td></tr>
+<tr><td>id</td><td><rows:id>420</rows:id></td></tr>
+<tr><td>id</td><td><rows:id>420</rows:id></td></tr>
+<tr><td>id</td><td><rows:id>420</rows:id></td></tr>
+</left:AWPTest.rows>
+</table>
 
 <p>Go to <a href="http://validator.w3.org/" target="_blank">http://validator.w3.org/</a> 
   to validate this XHTML</p>

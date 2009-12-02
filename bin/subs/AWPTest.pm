@@ -16,8 +16,7 @@ sub new {
 }
 
 sub yes {
-	my $self = shift;
-	my $context = shift;
+	my ($self, $context, $cb) = @_;
 
 	my $nodeseq = $context->{nodeseq};
 	#print Dumper $nodeseq;
@@ -30,53 +29,41 @@ sub yes {
 	
 	$context->{bindings}->{f}->{first_name} = "jerry";
 	$context->{bindings}->{f}->{last_name} = "garcia";
-	
-	my @out;
-	foreach my $n (@$nodeseq) {
-		push (@out, $n->walk($context));
-	}
 
-	return(join('',@out));
+	$context->{node}->walk_and_collect($context, $cb);
+	
 }
 
 sub rows {
-	my $self = shift;
-	my $context = shift;
+	my ($self, $context, $cb) = @_;
 
 	my $nodeseq = $context->{nodeseq};
-	my $user = $context->{user};
-	my $request = $context->{request};
-	my $server = $context->{server};
 
 	my @out;
 
-	# let's say, 10 rows...
-	foreach my $n (0 .. 10) {
-		$context->{bindings}->{rows}->{id} = $n;
-		foreach my $n (@$nodeseq) {
-			push (@out, $n->walk($context));
-		}
+	my $on = 0; my $seen = scalar(@$nodeseq); my @out;
+	foreach my $n (@$nodeseq) {
+		$context->{bindings}->{rows}->{id} = $on;
+		$n->walk($context, sub {
+			my ($dat) = @_;
+			$out[$on] = $dat;
+			$on += 1;
+			$seen -= 1;
+			if ($seen == 0) {
+				$cb->(join('',@out));
+			}
+		});
+		
 	}
 
-	return(join('',@out));
+
 }
 
 sub no {
-	my $self = shift;
+	my ($self, $context, $cb) = @_;
 
 	# don't descend into nodeseq
-
-	return undef;
-}
-
-sub getBinding {
-	my ($self, $o, $v) = @_;
-	# print Dumper $self;
-	
-	my $r = $self->{bindings}->{$o}->{$v};
-	# print "getBinding $o $v returning $r\n";
-
-	return $r;
+	$cb->();
 }
 
 1;	

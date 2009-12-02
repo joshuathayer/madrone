@@ -24,12 +24,15 @@ sub reset {
 sub walk_and_collect {
 	my ($self, $context, $cb, $first, $last) = @_;
 
+	$first = $first ? $first : '';
+	$last = $last ? $last : '';
+
 	my $on = 0; my $seen = scalar(@{$self->{nodes}}); my @out;
 
 	foreach my $n (@{$self->{nodes}}) {
 		$n->walk($context, sub {
 			my $dat = shift;
-
+			$dat = $dat ? $dat : '';
 			$out[$on] = $dat;
 			$on += 1;
 			$seen -= 1;
