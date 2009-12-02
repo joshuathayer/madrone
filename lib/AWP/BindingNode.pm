@@ -26,9 +26,14 @@ sub setBindVar {
 }
 
 sub walk {
-	my ($self, $context, $cb) = @_;
+	my ($self, $context, $bindings, $cb) = @_;
 
-	my $v = $context->{bindings}->{$self->{obj}}->{$self->{var}};
+	# 20091201, decided bindings need not to be in the context, since
+	# that's clobberable. a local var makes more sense. perhaps we could 
+	# do something like "look in the context if the local var doesn't have
+	# the binding... but for now.
+	#my $v = $context->{bindings}->{$self->{obj}}->{$self->{var}};
+	my $v = $bindings->{$self->{obj}}->{$self->{var}};
 
 	$cb->($v);
 }

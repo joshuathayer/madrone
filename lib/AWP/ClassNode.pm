@@ -28,15 +28,14 @@ sub setFunction {
 }
 
 sub walk {
-	my ($self, $context, $cb) = @_;
+	my ($self, $context, $bindings, $cb) = @_;
 
 	$context->{nodeseq} = $self->{nodes}; 
 	$context->{node} = $self;
 
 	# we need to run the function.
-
 	my $sub = $self->{'sub'};
-	$self->{instance}->$sub($context, $cb);
+	$self->{instance}->$sub($context, $bindings, $cb);
 }
 		
 

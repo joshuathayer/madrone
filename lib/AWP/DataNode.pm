@@ -23,7 +23,7 @@ sub setData {
 }
 
 sub walk {
-	my ($self, $context, $cb) = @_;
+	my ($self, $context, $bindings, $cb) = @_;
 
 	# we'll never have nodes of our own to walk
 	# maybe we will want a special i18n node!

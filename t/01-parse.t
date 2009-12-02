@@ -10,7 +10,7 @@ my $p = AWP::Parser->new();
 ok ( $p,                               "instantiate OK");
 ok ( $p->includeMods("t/subs/"),       "include mods" );
 ok ( $p -> parsefile("t/test.xhtml"),  "parse file" );
-$p -> walk({}, sub {
+$p -> walk({}, {}, sub {
 	my $dat = shift;
 	ok ($dat,                      "walked OK");
 });

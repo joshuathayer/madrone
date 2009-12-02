@@ -165,9 +165,9 @@ sub parsefile {
 }
 
 sub walk {
-	my ($self, $context, $cb) = @_;
+	my ($self, $context, $bindings, $cb) = @_;
 	
-	my $r = $self->{root}->walk($context, sub {
+	my $r = $self->{root}->walk($context, $bindings, sub {
 		$cb->(@_);
 		$self->{root}->reset();
 	});

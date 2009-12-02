@@ -8,7 +8,7 @@ sub new {
 	my $class = shift;
 
 	my $self = {
-		bindings => {},
+#		bindings => {},
 	};
 
 	bless $self, $class;
@@ -16,7 +16,7 @@ sub new {
 }
 
 sub yes {
-	my ($self, $context, $cb) = @_;
+	my ($self, $context, $bindings, $cb) = @_;
 
 	my $nodeseq = $context->{nodeseq};
 	#print Dumper $nodeseq;
@@ -27,15 +27,17 @@ sub yes {
 	#print "in AWPTest::yes!\n";
 	#print Dumper $context;
 	
-	$context->{bindings}->{f}->{first_name} = "jerry";
-	$context->{bindings}->{f}->{last_name} = "garcia";
+	#$context->{bindings}->{f}->{first_name} = "jerry";
+	$bindings->{f}->{first_name} = "jerry";
+	#$context->{bindings}->{f}->{last_name} = "garcia";
+	$bindings->{f}->{last_name} = "garcia";
 
-	$context->{node}->walk_and_collect($context, $cb);
+	$context->{node}->walk_and_collect($context, $bindings, $cb);
 	
 }
 
 sub rows {
-	my ($self, $context, $cb) = @_;
+	my ($self, $context, $bindings, $cb) = @_;
 
 	my $nodeseq = $context->{nodeseq};
 
@@ -43,8 +45,9 @@ sub rows {
 
 	my $on = 0; my $seen = scalar(@$nodeseq); my @out;
 	foreach my $n (@$nodeseq) {
-		$context->{bindings}->{rows}->{id} = $on;
-		$n->walk($context, sub {
+		#$context->{bindings}->{rows}->{id} = $on;
+		$bindings->{rows}->{id} = $on;
+		$n->walk($context, $bindings, sub {
 			my ($dat) = @_;
 			$out[$on] = $dat;
 			$on += 1;
@@ -60,7 +63,7 @@ sub rows {
 }
 
 sub no {
-	my ($self, $context, $cb) = @_;
+	my ($self, $context, $bindings, $cb) = @_;
 
 	# don't descend into nodeseq
 	$cb->();
