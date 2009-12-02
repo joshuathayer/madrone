@@ -44,7 +44,8 @@ sub new {
 				#print "instance is $instance (sub $sub)\n";
 
 				# then make a new node for this func
-				my $node = AWP::ClassNode->new();
+				#my $node = AWP::ClassNode->new(); # jt 20091201 warnings was warning about this my
+				$node = AWP::ClassNode->new();
 				$node->setFunction($func);
 
 				# put this node at the head of the stack...
@@ -66,12 +67,12 @@ sub new {
 				push(@{$self->{onNode}}, $node);
 
 				# make a node for this binding...
-				my $node = AWP::BindingNode->new();
-				$node->setBindObject($bind_object);
-				$node->setBindVar($bind_var);
+				my $nnode = AWP::BindingNode->new();
+				$nnode->setBindObject($bind_object);
+				$nnode->setBindVar($bind_var);
 
 				# put this node at the head of the stack...
-				unshift(@{$self->{stack}}, $node);
+				unshift(@{$self->{stack}}, $nnode);
 
 				# an point onNode to its list of nodes (so new (inner) nodes
 				# go in its list)
@@ -136,8 +137,11 @@ sub new {
 }
 
 sub includeMods {
+	# all the regexen are for untainting for testing 
 	my $self = shift;
 	my $path = shift;
+
+	($path) = $path =~ /(.*)/;
 
 	opendir(DIR, $path);
 	my @a = grep(/\.pm$/,readdir(DIR));
@@ -146,6 +150,7 @@ sub includeMods {
 	$self->{mods} = \@a;
 
 	foreach my $m (@{$self->{mods}}) {
+		($m) = $m =~ /(.*)/;
 		require $path.'/'.$m;
 	}
 }
