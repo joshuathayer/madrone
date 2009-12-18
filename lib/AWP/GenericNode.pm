@@ -11,6 +11,8 @@ sub new {
 	$self->{nodes} = [];
 	$self->{out} = [];
 
+	$self->{type} = "generic";
+
 	bless($self, $class);
 	return $self;
 }
@@ -31,17 +33,18 @@ sub walk_and_collect {
 	my $on = 0; my $seen = scalar(@{$self->{nodes}}); my @out;
 
 	foreach my $n (@{$self->{nodes}}) {
+		my $onn = $on;	# need a new lexically-scoped var for the closure
+
 		$n->walk($context, $bindings, sub {
 			my $dat = shift;
 			$dat = $dat ? $dat : '';
-			$out[$on] = $dat;
-			$on += 1;
-			$seen -= 1;
-
-			if ($seen == 0) {
+			$out[$onn] = $dat;
+			if (--$seen == 0) {
 				$cb->( join('', $first, @out, $last) );
 			}
 		});
+
+		$on++;
 	}
 
 }
