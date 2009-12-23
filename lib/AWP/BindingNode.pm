@@ -1,6 +1,7 @@
 package AWP::BindingNode;
 
 use base AWP::GenericNode;
+use Data::Dumper;
 
 use strict;
 
@@ -28,11 +29,9 @@ sub setBindVar {
 sub walk {
 	my ($self, $context, $bindings, $cb) = @_;
 
-	# 20091201, decided bindings need not to be in the context, since
-	# that's clobberable. a local var makes more sense. perhaps we could 
-	# do something like "look in the context if the local var doesn't have
-	# the binding... but for now.
-	#my $v = $context->{bindings}->{$self->{obj}}->{$self->{var}};
+	#print "binding node $self->{obj} $self->{var}:\n";
+	#print Dumper $bindings;
+
 	my $v = $bindings->{$self->{obj}}->{$self->{var}};
 
 	$cb->($v);

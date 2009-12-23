@@ -1,6 +1,7 @@
 package AWP::ClassNode;
 
 use base AWP::GenericNode;
+use Data::Dumper;
 
 use strict;
 
@@ -29,6 +30,9 @@ sub setFunction {
 
 sub walk {
 	my ($self, $context, $bindings, $cb) = @_;
+
+	#print "ClassNode $self->{func} $self->{mod} bindings:\n";
+	#print Dumper $bindings;
 
 	$context->{nodeseq} = $self->{nodes}; 
 	$context->{node} = $self;

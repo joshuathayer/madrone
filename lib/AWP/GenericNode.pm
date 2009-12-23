@@ -26,6 +26,9 @@ sub reset {
 sub walk_and_collect {
 	my ($self, $context, $bindings, $cb, $first, $last) = @_;
 
+	#print "generic node! bindings:\n";
+	#print Dumper $bindings;
+
 	# make tests stop complainig
 	$first = $first ? $first : '';
 	$last = $last ? $last : '';

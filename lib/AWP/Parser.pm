@@ -8,6 +8,8 @@ use AWP::GenericNode;
 use AWP::DataNode;
 use AWP::ClassNode;
 use AWP::BindingNode;
+use AWP::NamedNode;
+use AWP::UseNamedNode;
 
 sub new {
 	my $class = shift;
@@ -22,6 +24,7 @@ sub new {
 	$self->{chunk} = '';
 
 	$self->{onFunc} = undef;
+	$self->{namednodes} = {};
 
 	bless($self, $class);
 
@@ -30,7 +33,79 @@ sub new {
 			my $ex = shift;
 			my $el = shift;
 			my @attributes = @_;
-			if ($el =~ /left:(.*)/) {
+			if ($el =~ /left:NamedNode/) {
+
+				# a named chunk which can be used elsewhere in the system
+				# we stick it in a hash that can be grabbed anywhere
+
+				# first we make a data node from our current $chunk
+				my $node = AWP::DataNode->new();
+				$node->setData($self->{chunk});
+
+				push(@{$self->{onNode}}, $node);
+
+				# now a named chunk 
+				my $ats;
+				while (scalar(@attributes)) {
+					my $at = shift @attributes;
+					my $v = shift @attributes;
+					$ats->{$at} = $v;
+				}
+
+				my $nodename = $self->{fn} .'.'. $ats->{name};
+				print "create named node! $nodename\n";
+
+				# then make a new node for this func
+				$node = AWP::NamedNode->new();
+				$node->setName($nodename);
+				$self->{namednodes}->{$nodename} = $node;
+				print Dumper $self->{namednodes};
+
+				# put this node at the head of the stack...
+				unshift(@{$self->{stack}}, $node);
+
+				# an point onNode to its list of nodes (so new (inner) nodes
+				# go in its list)
+				$self->{onNode} = $self->{stack}->[0]->{nodes};
+
+				$self->{chunk} = '';
+
+			} elsif ($el =~ /left:UseNamedNode/) {
+				# actually use a name node
+
+				# first we make a data node from our current $chunk
+				my $node = AWP::DataNode->new();
+				$node->setData($self->{chunk});
+
+				push(@{$self->{onNode}}, $node);
+
+				# now a named chunk 
+				my $ats;
+				while (scalar(@attributes)) {
+					my $at = shift @attributes;
+					my $v = shift @attributes;
+					$ats->{$at} = $v;
+				}
+
+				my $nodename = $ats->{name};
+				print "use named node!! $nodename\n";
+				print Dumper $self->{namednodes};
+
+				# then make a new node for this func
+				$node = AWP::UseNamedNode->new($self->{namednodes});
+				$node->setName($nodename);
+
+				# put this node at the head of the stack...
+				unshift(@{$self->{stack}}, $node);
+
+				# an point onNode to its list of nodes (so new (inner) nodes
+				# go in its list)
+				$self->{onNode} = $self->{stack}->[0]->{nodes};
+
+				$self->{chunk} = '';
+
+
+			} elsif ($el =~ /left:(.*)/) {
 				my $func = $1;
 
 				# it's a control tag. we make a data node from our current $chunk
@@ -44,7 +119,6 @@ sub new {
 				#print "instance is $instance (sub $sub)\n";
 
 				# then make a new node for this func
-				#my $node = AWP::ClassNode->new(); # jt 20091201 warnings was warning about this my
 				$node = AWP::ClassNode->new();
 				$node->setFunction($func);
 
@@ -136,6 +210,18 @@ sub new {
 	return $self;
 }
 
+sub setNamedNodes {
+	my $self = shift;
+	my $nodes = shift;
+
+	$self->{namednodes} = $nodes;
+}
+
+sub getNamedNodes {
+	my $self = shift;
+	return $self->{namednodes};
+}
+
 sub includeMods {
 	# all the regexen are for untainting for testing 
 	my $self = shift;
@@ -161,6 +247,8 @@ sub includeMods {
 sub parsefile {
 	my $self = shift;
 	my $fn = shift;
+
+	($self->{fn}) = $fn =~ /.*\/(.*)\..*/;
 	$self->{p}->parsefile($fn);
 }
 
