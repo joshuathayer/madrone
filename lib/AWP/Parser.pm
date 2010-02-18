@@ -33,7 +33,23 @@ sub new {
 			my $ex = shift;
 			my $el = shift;
 			my @attributes = @_;
-			if ($el =~ /left:NamedNode/) {
+
+			if ($el =~ /html/) {
+				# we need to clean up the xmlns stuff
+				# assume we're only going to emit xhtml
+				# and only in the default namespace
+				$self->{chunk} .= "<$el";
+				while (scalar(@attributes)) {
+					my $at = shift @attributes;
+					my $v = shift @attributes;
+					unless ($at =~ /:/) {
+						$self->{chunk} .= " $at=\"$v\"";
+					}
+				}
+
+				$self->{chunk} .= ">";
+
+			} elsif ($el =~ /left:NamedNode/) {
 
 				# a named chunk which can be used elsewhere in the system
 				# we stick it in a hash that can be grabbed anywhere
@@ -154,7 +170,9 @@ sub new {
 
 				$self->{chunk} = '';
 			} else {
+
 				$self->{chunk} .= "<$el";
+
 				while (scalar(@attributes)) {
 					my $at = shift @attributes;
 					my $v = shift @attributes;
@@ -162,6 +180,7 @@ sub new {
 				}
 
 				$self->{chunk} .= ">";
+
 			}
 		},
 		End => sub {
