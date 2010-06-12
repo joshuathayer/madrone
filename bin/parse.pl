@@ -14,9 +14,11 @@ print "parse done\n";
 
 my $cv = AnyEvent->condvar;
 my $context = {}; my $bindings = {};
+
 $p -> walk($context, $bindings, sub {
 	my $dat = shift;
 	print "got: $dat\n";
 	$cv->send;
 });
+
 $cv->recv;

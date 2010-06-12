@@ -28,12 +28,13 @@ sub parseDirectory {
 
 	foreach my $template (@templates) {
 
-		my ($tname) = $template =~ /(.*)\.xhtml/;		
+		my ($tname) = $template =~ /(.*)\.xhtml$/;
 		next unless $tname;
 
     	my $p = AWP::Parser->new();
     	$p->setNamedNodes($namednodes);
     	$p->includeMods($modDir);
+        print "parsing file $template\n";
     	$p->parsefile("$templateDir/$template");
     	$ret->{$tname} = $p;
 	}

@@ -28,6 +28,8 @@ sub new {
 
 	bless($self, $class);
 
+    my $seen_default = 0;
+
 	my $p = new XML::Parser(Handlers=>{
 		Start => sub {
 			my $ex = shift;
@@ -148,7 +150,7 @@ sub new {
 				$self->{chunk} = '';
 
 			} elsif ($el =~ /(.*):(.*)/) {
-				# it's a binding object!
+				# it's a binding object
 				my ($bind_object, $bind_var) = ($1, $2);
 
 				# if there is chunk data, we need to make a note of it
@@ -170,16 +172,29 @@ sub new {
 
 				$self->{chunk} = '';
 			} else {
+                # it's an HTML tag.
+                $self->{chunk} .= "<$el";
 
-				$self->{chunk} .= "<$el";
+                # $seen_default is for implementing self-closing tags
+                # if we've already Started an HTML tag, an immediately start a new tag
+                # we cannot self-close the original one, *even* if we never get into the 
+                # default handler. 
+                if ($seen_default) { $seen_default = 0; }
 
 				while (scalar(@attributes)) {
 					my $at = shift @attributes;
 					my $v = shift @attributes;
+                    # get rid of anything before the first slash for <link> href's
+                    # why? for a template to render as a file (during template development),
+                    # a relative path is used. in the server, we always want an absolute path
+                    if (($el eq "link") and ($at eq "href")) {
+                        $v =~ s/.*?\//\//;
+                    }
 					$self->{chunk} .= " $at=\"$v\"";
 				}
 
-				$self->{chunk} .= ">";
+                $self->{chunk} .= ">";
+                $seen_default = 0;
 
 			}
 		},
@@ -209,7 +224,14 @@ sub new {
 				# containing node's list
 				push(@{$self->{onNode}}, $node);
 			} else {
-				$self->{chunk} .= "</$el>";
+                # we've closed a non-special (HTML?) tag. If there was no body, we should be
+                # able to do an XHTML <xxx/> style close...
+                if ((not ($seen_default)) and ($el !~ /script|div/)) {
+                    chop($self->{chunk});
+                    $self->{chunk} .= " />";
+                } else {
+				    $self->{chunk} .= "</$el>";
+                }
 			}
 		},
 		Final => sub {
@@ -220,6 +242,7 @@ sub new {
 		Default => sub {
 			my ($ex, $dat) = @_;
 			$self->{chunk} .= "$dat";
+            $seen_default = 1;
 		},
 
 	});
