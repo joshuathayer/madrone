@@ -188,7 +188,7 @@ sub new {
                     # why? for a template to render as a file (during template development),
                     # a relative path is used. in the server, we always want an absolute path
                     if (($el eq "link") and ($at eq "href")) {
-                        $v =~ s/.*?\//\//;
+                        $v =~ s/^\.*?\//\//;
                     }
 					$self->{chunk} .= " $at=\"$v\"";
 				}
