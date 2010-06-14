@@ -31,7 +31,9 @@ sub parseDirectory {
 		my ($tname) = $template =~ /(.*)\.xhtml$/;
 		next unless $tname;
 
-    	my $p = AWP::Parser->new();
+        print "AWP::Parsing $template\n";
+
+    	my $p = AWP::Parser->new(Style => 'Debug');
     	$p->setNamedNodes($namednodes);
     	$p->includeMods($modDir);
         print "parsing file $template\n";
