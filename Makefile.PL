@@ -9,7 +9,6 @@ all_from     'lib/AWP.pm';
 
 # Specific dependencies
 build_requires	'Test::More';
-requires	'Sisyphus'	=> '0.01';
 
 auto_install;
 

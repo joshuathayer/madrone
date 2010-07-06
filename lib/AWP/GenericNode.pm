@@ -2,13 +2,14 @@ package AWP::GenericNode;
 
 use strict;
 use Data::Dumper;
+use AWP::NodeSeq;
 
 sub new {
 	my $class = shift;
 
 	my $self = {};
 
-	$self->{nodes} = [];
+    $self->{seq} = new AWP::NodeSeq;
 	$self->{out} = [];
 
 	$self->{type} = "generic";
@@ -30,11 +31,14 @@ sub walk_and_collect {
 	$first = $first ? $first : '';
 	$last = $last ? $last : '';
 
-	my $on = 0; my $seen = scalar(@{$self->{nodes}}); my @out;
+	my $on = 0;
+    my $seen = $self->{seq}->length;
+    my @out;
 
-	foreach my $n (@{$self->{nodes}}) {
+# PUT THIS IN NODESEQ
+    my $ni = $self->{seq}->iterator; 
+    while (my $n = $ni->next()) {
 		my $onn = $on;	# need a new lexically-scoped var for the closure
-
 		$n->walk($context, $bindings, sub {
 			my $dat = shift;
 			$dat = $dat ? $dat : '';
@@ -46,6 +50,7 @@ sub walk_and_collect {
 
 		$on++;
 	}
+#### 
 
 }
 

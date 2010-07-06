@@ -20,7 +20,7 @@ sub new {
 	$self->{root} = AWP::GenericNode->new();
 
 	unshift(@{$self->{stack}}, $self->{root});
-	$self->{onNode} = @{$self->{stack}}[0]->{nodes};
+	$self->{onSeq} = @{$self->{stack}}[0]->{seq};
 	$self->{chunk} = '';
 
 	$self->{onFunc} = undef;
@@ -51,7 +51,7 @@ sub new {
 
 				$self->{chunk} .= ">";
 
-			} elsif ($el =~ /left:NamedNode/) {
+			} elsif ($el =~ /madrone:NamedNode/) {
 
 				# a named chunk which can be used elsewhere in the system
 				# we stick it in a hash that can be grabbed anywhere
@@ -60,7 +60,8 @@ sub new {
 				my $node = AWP::DataNode->new();
 				$node->setData($self->{chunk});
 
-				push(@{$self->{onNode}}, $node);
+                #push(@{$self->{onSeq}}, $node);
+			    $self->{onSeq}->push($node);
 
 				# now a named chunk 
 				my $ats;
@@ -77,25 +78,25 @@ sub new {
 				$node = AWP::NamedNode->new();
 				$node->setName($nodename);
 				$self->{namednodes}->{$nodename} = $node;
-				print Dumper $self->{namednodes};
 
 				# put this node at the head of the stack...
 				unshift(@{$self->{stack}}, $node);
 
-				# an point onNode to its list of nodes (so new (inner) nodes
+				# an point onSeq to its list of nodes (so new (inner) nodes
 				# go in its list)
-				$self->{onNode} = $self->{stack}->[0]->{nodes};
+				$self->{onSeq} = $self->{stack}->[0]->{seq};
 
 				$self->{chunk} = '';
 
-			} elsif ($el =~ /left:UseNamedNode/) {
+			} elsif ($el =~ /madrone:UseNamedNode/) {
 				# actually use a name node
 
 				# first we make a data node from our current $chunk
 				my $node = AWP::DataNode->new();
 				$node->setData($self->{chunk});
 
-				push(@{$self->{onNode}}, $node);
+				#push(@{$self->{onSeq}}, $node);
+				$self->{onSeq}->push($node);
 
 				# now a named chunk 
 				my $ats;
@@ -106,8 +107,6 @@ sub new {
 				}
 
 				my $nodename = $ats->{name};
-				print "use named node!! $nodename\n";
-				print Dumper $self->{namednodes};
 
 				# then make a new node for this func
 				$node = AWP::UseNamedNode->new($self->{namednodes});
@@ -116,21 +115,22 @@ sub new {
 				# put this node at the head of the stack...
 				unshift(@{$self->{stack}}, $node);
 
-				# an point onNode to its list of nodes (so new (inner) nodes
+				# an point onSeq to its list of nodes (so new (inner) nodes
 				# go in its list)
-				$self->{onNode} = $self->{stack}->[0]->{nodes};
+				$self->{onSeq} = $self->{stack}->[0]->{seq};
 
 				$self->{chunk} = '';
 
 
-			} elsif ($el =~ /left:(.*)/) {
+			} elsif ($el =~ /madrone:(.*)/) {
 				my $func = $1;
 
 				# it's a control tag. we make a data node from our current $chunk
 				my $node = AWP::DataNode->new();
 				$node->setData($self->{chunk});
 
-				push(@{$self->{onNode}}, $node);
+                #push(@{$self->{onSeq}}, $node);
+				$self->{onSeq}->push($node);
 
 				my ($mod, $sub) = $func =~ /(.*)\.(.*)/;
 				my $instance = new $mod;
@@ -143,9 +143,9 @@ sub new {
 				# put this node at the head of the stack...
 				unshift(@{$self->{stack}}, $node);
 
-				# an point onNode to its list of nodes (so new (inner) nodes
+				# an point onSeq to its list of nodes (so new (inner) nodes
 				# go in its list)
-				$self->{onNode} = $self->{stack}->[0]->{nodes};
+				$self->{onSeq} = $self->{stack}->[0]->{seq};
 
 				$self->{chunk} = '';
 
@@ -156,7 +156,8 @@ sub new {
 				# if there is chunk data, we need to make a note of it
 				my $node = AWP::DataNode->new();
 				$node->setData($self->{chunk});
-				push(@{$self->{onNode}}, $node);
+				#push(@{$self->{onSeq}}, $node);
+			    $self->{onSeq}->push($node);
 
 				# make a node for this binding...
 				my $nnode = AWP::BindingNode->new();
@@ -166,9 +167,9 @@ sub new {
 				# put this node at the head of the stack...
 				unshift(@{$self->{stack}}, $nnode);
 
-				# an point onNode to its list of nodes (so new (inner) nodes
+				# an point onSeq to its list of nodes (so new (inner) nodes
 				# go in its list)
-				$self->{onNode} = $self->{stack}->[0]->{nodes};
+				$self->{onSeq} = $self->{stack}->[0]->{seq};
 
 				$self->{chunk} = '';
 			} else {
@@ -201,7 +202,7 @@ sub new {
 		End => sub {
 			my ($ex, $el) = @_;
 			if ($el =~ /(.*):(.*)/) {
-				# we've closed a 'left' tag
+				# we've closed a 'madrone' tag
 				# or a bind tag...
 				my $func = $1;
 
@@ -209,7 +210,8 @@ sub new {
 				if (length($self->{chunk})) {
 					my $node = AWP::DataNode->new();
 					$node->setData($self->{chunk});
-					push(@{$self->{onNode}}, $node);
+					#push(@{$self->{onSeq}}, $node);
+			        $self->{onSeq}->push($node);
 
 					$self->{chunk} = '';
 				}
@@ -217,12 +219,13 @@ sub new {
 				# pop that node off the head of the stack, since we've closed it
 				my $node = shift @{$self->{stack}};
 
-				# and point onNode to the new head of the stack
-				$self->{onNode} = $self->{stack}->[0]->{nodes};
+				# and point onSeq to the new head of the stack
+				$self->{onSeq} = $self->{stack}->[0]->{seq};
 
 				# also, since we're done with that entire node, we can add it to the end of the
 				# containing node's list
-				push(@{$self->{onNode}}, $node);
+				#push(@{$self->{onSeq}}, $node);
+			    $self->{onSeq}->push($node);
 			} else {
                 # we've closed a non-special (HTML?) tag. If there was no body, we should be
                 # able to do an XHTML <xxx/> style close...
@@ -237,7 +240,8 @@ sub new {
 		Final => sub {
 			my $node = AWP::DataNode->new();
 			$node->setData($self->{chunk});
-			push(@{$self->{onNode}}, $node);
+			 #push(@{$self->{onSeq}}, $node);
+		    $self->{onSeq}->push($node);
 		},
 		Default => sub {
 			my ($ex, $dat) = @_;
@@ -279,8 +283,11 @@ sub includeMods {
 
 	foreach my $m (@{$self->{mods}}) {
 		($m) = $m =~ /(.*)/;
-		require $path.'/'.$m;	# check for errors: there will be some!
-		# probably want to eval { } this... XXX
+        print "about to eval $m\n";
+        eval {
+		    require $path.'/'.$m;	# check for errors: there will be some!
+        };
+        die($@) if $@;
 	}
 
 	return 1;
@@ -292,6 +299,7 @@ sub parsefile {
 
 	($self->{fn}) = $fn =~ /.*\/(.*)\..*/;
 	$self->{p}->parsefile($fn);
+    # print Dumper $self->{root};
 }
 
 sub walk {

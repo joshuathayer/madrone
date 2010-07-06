@@ -16,9 +16,11 @@ Version 0.01
 our $VERSION = '0.01';
 
 sub parseDirectory {
-	my $templateDir = shift;
-	my $modDir = shift;
-	my $namednodes = shift;
+	my ($templateDir, $modDir, $namednodes) = @_;
+
+    print "hello $templateDir $modDir\n";
+
+    $namednodes = {} unless defined ($namednodes);
 
 	my $ret = {};
 
@@ -31,12 +33,9 @@ sub parseDirectory {
 		my ($tname) = $template =~ /(.*)\.xhtml$/;
 		next unless $tname;
 
-        print "AWP::Parsing $template\n";
-
     	my $p = AWP::Parser->new(Style => 'Debug');
     	$p->setNamedNodes($namednodes);
     	$p->includeMods($modDir);
-        print "parsing file $template\n";
     	$p->parsefile("$templateDir/$template");
     	$ret->{$tname} = $p;
 	}

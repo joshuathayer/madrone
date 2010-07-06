@@ -20,7 +20,7 @@ sub setFunction {
 	my $func = shift;
 
 	my ($mod, $sub) = $func =~ /(.*)\.(.*)/;
-	my $instance = new $mod;
+	my $instance = $mod->new();
 
 	$self->{func} = $func;
 	$self->{mod} = $mod;
@@ -31,17 +31,16 @@ sub setFunction {
 sub walk {
 	my ($self, $context, $bindings, $cb) = @_;
 
-	#print "ClassNode $self->{func} $self->{mod} bindings:\n";
-	#print Dumper $bindings;
-
-	$context->{nodeseq} = $self->{nodes}; 
+    # we want our user code to be able to operate
+    # on a copy of our child tree. not on the original,
+    # since modifying the original will mutate other user's 
+    # tree walks
+    $context->{nodeseq} = $self->{seq}; # XXX COPY COPY COPY
 	$context->{node} = $self;
 
 	# we need to run the function.
 	my $sub = $self->{'sub'};
 	$self->{instance}->$sub($context, $bindings, $cb);
 }
-		
-
 
 1;
