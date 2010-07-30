@@ -28,6 +28,7 @@
     <li><a href="#integration">Integration with Web Servers</a></li>
 </ol>
    
+<a name="intro" />
 <h4>Introduction</h4>
 <p>
 madrone takes most of its inspiration from Lift, a template framework for the Scala language (<a href="http://liftweb.net/">http://liftweb.net</a>).
@@ -40,6 +41,7 @@ Madrone is able to operate using a non-blocking model. Template elements which u
 </p>
 
 <p>
+<a name="example" />
 <h4>Example</h4>
 
 This "hello world" example uses two files: <code>templates/example.xhtml</code> and <code>mods/HelloExample.pm</code>.
@@ -107,9 +109,11 @@ The output of evaluating the template:
 &lt;/html&gt;
 </pre>
 </blockquote>
+<a name="model" />
 <h4>3. Model and Principals</h4>
-<p>
-<h5>3.1 Template Parsing</h5>
+<a name="parsing" />
+    <h5>3.1 Template Parsing</h5>
+    <p>
 Madrone templates are valid XHTML files, and as such are easily represented as a tree. A tag corresponds to a node in the tree: tags which "contain" other tags (as &lt;ul&gt; may contain &lt;li&gt; tags) are interior nodes. Tags which don't contain other tags are leaf nodes. Since there is not a single tag which contains an entire XHTML document, a special node must be defined to serve as the root of the tree.
 </p>
 <p>Template processesing begins with parsing the template into a tree structure. Many tags don't matter to madrone: these are passed over and treated simply as data. We only care about the special madrone-specific tags. Those tags become instances of various madrone Node classes, which make up the nodes of the tree structure.
@@ -119,6 +123,7 @@ Documents are parsed using the AWP::Parser class. After some setup, invoking the
 </p>
 <img src="parsed.png" />
 
+<a name="eval" />
 <h5>3.2 Evaluation</h5>
 <p>
 Evaluation is a recursive process which starts at the leaf node: the entire process can be described from the point of view of any one node.  Different node types (see next section) have different behavior at evaluation-time, but the basic idea is the same for all of them, and boils down to
@@ -149,6 +154,7 @@ Many nodes have children, as explained above. If a node has children, it is that
 <h5>3.2.4 The Recursive Nature</h5>
 <p>When the madrone application calls the evaluate method on the root node, it sets in to motion a chain of "evaluate" calls which reach down in to the tree representing the XHTML document. Each node follows the rules above, and eventually an arrayref of scalars of valid XHTML, programmatically generated based on the context of the request, is returned to the application ready for display in the user's browser.
 </p>
+<a name="nodes">
 <h4>4. Node Types</h4>
 <h5>4.1 Class Nodes</h5>
 <img src="classnode.png">
@@ -168,6 +174,7 @@ Binding Nodes implement simple variable substition. A class node may modify the 
 <p>
 Named Nodes implement cross-template Node pointers. A named node is a Class Node that is registered in a Parser-wide dictionary. At evaluation time, a named node can be "used" by a special node. Evaluation is then passed to the Named Node, even if that Named Node was not defined in the current template. This allows, for example, a common header or footer across multiple templates.
 </p>
+<a name="outside">
 <h4>5. Data from Outside</h4>
 <p>As mentioned, madrone is able to operate in a non-blocking environment. In this environment, it's essential to avoid blocking on IO events. Thankfully, there are a number of libraries which make this easy. In particular, the <a href="http://search.cpan.org/~mlehmann/AnyEvent-5.271/lib/AnyEvent.pm">AnyEvent</a> family of libraries is well-suited for the task. 
 </p>
@@ -177,4 +184,7 @@ Named Nodes implement cross-template Node pointers. A named node is a Class Node
     <li><a href="http://search.cpan.org/~mlehmann/IO-AIO-3.65/AIO.pm">IO::AIO</a>: asynchronous disk access</li>
     <li><a href="http://github.com/joshuathayer/simplestore">simplestore</a>: a set of simple, disk-based, asynchronous storage classes.</li>
     <li><a href="http://github.com/joshuathayer/posql">posql</a>: asynchronous mysql client</li>
-<p>
+    </ul>
+<a name="integration">
+    <h4>6. Integrating madrone</h4>
+    <p>madrone can operate in a standalone script, but of course makes the most sense embedded in a webserver. madone has been successfully integrated in a <a href="http://plackperl.org/">PSGI</a>-compliant webserver (<a href="http://github.com/miyagawa/Twiggy">Twiggy</a>). Look in the examples directory. There's no reason madrone couldn't be integrated with a synchronous webserver like Apache.</p>
