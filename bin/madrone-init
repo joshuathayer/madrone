@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+
+use strict;
+use File::Copy;
+
+my $skel = "./skeleton";
+
+my $dir = $ARGV[0];
+
+unless (defined $dir) {
+    print "usage: $0 target-directory\n";
+    exit;
+}
+
+if (-d $dir) {
+    print "error: target already exists at $dir\n";
+    exit;
+}
+
+mkdir("$dir");
+
+mkdir ("$dir/bin");
+mkdir ("$dir/mods");
+mkdir ("$dir/static");
+mkdir ("$dir/static/css");
+mkdir ("$dir/static/css/yui3");
+mkdir ("$dir/static/js");
+mkdir ("$dir/static/img");
+mkdir ("$dir/templates");
+
+copy("$skel/application.psgi", "$dir/bin/application.psgi");
+copy("$skel/base.css", "$dir/static/css/yui3/base.css");
+copy("$skel/fonts.css", "$dir/static/css/yui3/fonts.css");
+copy("$skel/reset.css", "$dir/static/css/yui3/reset.css");
+copy("$skel/jquery.js", "$dir/static/js/jquery.js");
+copy("$skel/HelloWorld.pm", "$dir/mods/HelloWorld.pm");
+copy("$skel/index.xhtml", "$dir/templates/index.xhtml");
+copy("$skel/README", "$dir/README");

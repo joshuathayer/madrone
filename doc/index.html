@@ -10,6 +10,7 @@
     <li><a href="#intro">Introduction</a></li>
     <li><a href="#example">Example</a></li>
     <li><a href="#model">Model and Principals</a></li>
+
     <ol>
         <li><a href="#parsing">Parsing</a></li>
         <li><a href="#eval">Evaluating</a></li>
@@ -21,8 +22,6 @@
         </ol>
     </ol>
         
-
-
     <li><a href="#nodes">Node Types</a></li>
     <li><a href="#outside">Data from Outside Sources</a></li>
     <li><a href="#integration">Integration with Web Servers</a></li>
@@ -73,7 +72,7 @@ templates/example.xhtml:
 &lt;/head&gt;
 &lt;body&gt;
     &lt;madrone:HelloExample.Hello&gt;
-    Hello, &lt;helloExample.audience&gt;world&lt;/helloExample.audience&gt;!
+    Hello, &lt;helloExample:audience&gt;world&lt;/helloExample:audience&gt;!
     &lt;/madrone:HelloExample.Hello&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -130,7 +129,7 @@ Evaluation is a recursive process which starts at the leaf node: the entire proc
 <ol>
     <li>modify the context</li>
     <li>evaluate your children</li>
-    <li>call your callback with a scalar</li>
+    <li>call your callback with an arrayref of scalars</li>
 </ol>
 
 </p>
