@@ -78,7 +78,6 @@ sub walk_all_nodes {
             $dat = $dat ? $dat : '';
             $out[$onn] = $dat;
             if (--$len== 0) {
-                #$cb->( join('', $first, @out, $last) );
                 $cb->( join('', @out) );
             }
         });

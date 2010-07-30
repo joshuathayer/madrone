@@ -3,7 +3,6 @@ package AWP::Parser;
 use strict;
 
 use XML::Parser;
-use Data::Dumper;
 use AWP::GenericNode;
 use AWP::DataNode;
 use AWP::ClassNode;
@@ -299,7 +298,6 @@ sub parsefile {
 
 	($self->{fn}) = $fn =~ /.*\/(.*)\..*/;
 	$self->{p}->parsefile($fn);
-    # print Dumper $self->{root};
 }
 
 sub walk {

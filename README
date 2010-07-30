@@ -1,25 +1,80 @@
-AWP - Any(event) Web Publish version 0.01
-=========================================
+madrone - an XHTML-based template framework
+===========================================
 
-This is a template language.
-It's like lift, but in perl and vaguer.
+madrone takes most of its inspiration from Lift, a template framework for the Scala language (http://liftweb.net/).
 
-Track issues at http://circl.lighthouseapp.com/projects/41103-awp
+Madrone uses browser-renderable XHTML files as its templates. "Active" elements of pages are wrapped in user-defined XHTML tags. Those tags directly map to user code- when the page is evaluated, functions are triggered which may influence the subsequent rendering of the template.
+
+Madrone is able to operate using a non-blocking model. Template elements which use disk or network IO should be carefully programmed to remain non-blocking- judicious use of asynchronous disk, database, and network libraries should make this easy. Using this model, various elements of madrone templates are evaluated in parallel and should retain good performance.
+
+EXAMPLE
+
+This "hello world" example uses two files: templates/example.xhtml and mods/HelloExample.pm.
+
+The .xhtml file is the template- it's valid XHTML, and will render properly in any browser. You can style the page however you want using included CSS files, embed images, include javascript. Your browser will do the right thing.
+
+The template includes tags outside the w3c XHTML namespace. Any madrone template must declare the madrone namespace: tags in the "madrone" namespace map to methods in the user-defined modules. This example declares the <madrone:HelloExample> namespace; the tag <madrone:HelloExample.Hello> maps to the the function Hello in the HelloExample.pm package.
+
+Additional namespaces may be declared for variable substitution. In this example the "helloExample" namespace is declared for that purpose.
+
+templates/example.xhtml:
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transition//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:madrone="http://github.com/joshuathayer/madrone"
+    xmlns:helloExample="http://github.com/joshuathayer/madrone"
+>
+<head>
+    <title>hello!</title>
+    <link rel="stylesheet" href="../static/css/style.css" type="text/css" />
+</head>
+<body>
+    <madrone:HelloExample.Hello>
+    Hello, <helloExample.audience>world</helloExample.audience>!
+    </madrone:HelloExample.Hello>
+</body>
+</html>
+
+mods/HelloExample.pm:
+package HelloExample;
+sub Hello {
+    my ($self, $context, $bindings, $cb) = @_;
+
+    $bindings->{'HelloExample'}->{'audience'} = "universe";
+
+    $context->{nodeseq}->walk_all_nodes($context, $bindings, $cb);
+}
+
+After running:
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE ... >
+...
+<html>
+<body>
+    Hello, universe!
+</body>
+</html>
+
+DOCUMENTATION
+
+See /doc/ in this directory.
 
 INSTALLATION
 
-To install this module type the following:
+To install madrone, type the following:
 
    perl Makefile.PL
    make
    make test
-   make install
+   sudo make install
 
 DEPENDENCIES
 
-This module requires these other modules and libraries:
+This module requires
 
-  Sisyphus 0.01
+    XML::Parser (available on CPAN)
+    Test::More
 
 COPYRIGHT AND LICENCE
 

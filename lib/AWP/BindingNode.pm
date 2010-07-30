@@ -29,9 +29,6 @@ sub setBindVar {
 sub walk {
 	my ($self, $context, $bindings, $cb) = @_;
 
-	#print "binding node $self->{obj} $self->{var}:\n";
-	#print Dumper $bindings;
-
 	my $v = $bindings->{$self->{obj}}->{$self->{var}};
 
 	$cb->($v);

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transition//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+>
+
+<h2>madrone - an XHTML-based template framework</h2>
+
+<ol>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#example">Example</a></li>
+    <li><a href="#model">Model and Principals</a></li>
+    <ol>
+        <li><a href="#parsing">Parsing</a></li>
+        <li><a href="#eval">Evaluating</a></li>
+        <ol>
+            <li>Modify Context</li>
+            <li>Evaluate Children</li>
+            <li>Return</li>
+            <li>The Recursive Nature</li>
+        </ol>
+    </ol>
+        
+
+
+    <li><a href="#nodes">Node Types</a></li>
+    <li><a href="#outside">Data from Outside Sources</a></li>
+    <li><a href="#integration">Integration with Web Servers</a></li>
+</ol>
+   
+<h4>Introduction</h4>
+<p>
+madrone takes most of its inspiration from Lift, a template framework for the Scala language (<a href="http://liftweb.net/">http://liftweb.net</a>).
+</p>
+<p>
+Madrone uses browser-renderable XHTML files as its templates. "Active" elements of pages are wrapped in user-defined XHTML tags. Those tags directly map to user code- when the page is evaluated, functions are triggered which may influence the subsequent rendering of the template.
+</p>
+<p>
+Madrone is able to operate using a non-blocking model. Template elements which use disk or network IO should be carefully programmed to remain non-blocking- judicious use of asynchronous disk, database, and network libraries should make this easy. Using this model, various elements of madrone templates are evaluated in parallel and should retain good performance.
+</p>
+
+<p>
+<h4>Example</h4>
+
+This "hello world" example uses two files: <code>templates/example.xhtml</code> and <code>mods/HelloExample.pm</code>.
+</p>
+<p>
+The .xhtml file is the template- it's valid XHTML, and will render properly in any browser. You can style the page however you want using included CSS files, embeded images, and included javascript. Your browser will do the right thing.
+</p>
+<p>
+The template includes tags outside the w3c XHTML namespace. In order to remain legal XHTML, any madrone template must declare these outside namespaces in its &lt;html&gt; tag. This example declares the &lt;madrone:HelloExample&gt; namespace; the tag <madrone:HelloExample.Hello> maps to the the function Hello in the HelloExample.pm package. Any template which references a madrone module must include this namespace declaration.
+</p>
+<p>
+Additional namespaces may be declared for variable substitution. In this example the "helloExample" namespace is declared for that purpose.
+
+</p>
+<p>
+templates/example.xhtml:
+<blockquote>
+<pre>
+&lt;?xml version="1.0" encoding="iso-8859-1"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transition//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+&lt;html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:madrone="http://github.com/joshuathayer/madrone"
+    xmlns:helloExample="http://github.com/joshuathayer/madrone"
+&gt;
+&lt;head&gt;
+    &lt;title&gt;hello!&lt;/title&gt;
+    &lt;link rel="stylesheet" href="../static/css/style.css" type="text/css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;madrone:HelloExample.Hello&gt;
+    Hello, &lt;helloExample.audience&gt;world&lt;/helloExample.audience&gt;!
+    &lt;/madrone:HelloExample.Hello&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</blockquote>
+<p>
+The code referenced in the template exists in <code>mods/HelloExample.pm</code>:
+<p>
+<blockquote>
+<pre>
+package HelloExample;
+sub Hello {
+    my ($self, $context, $bindings, $cb) = @_;
+
+    $bindings->{'HelloExample'}->{'audience'} = "universe";
+
+    $context->{nodeseq}->walk_all_nodes($context, $bindings, $cb);
+}
+</pre>
+</blockquote>
+<p>
+The output of evaluating the template:
+</p>
+<blockquote>
+<pre>
+&lt;?xml version="1.0" encoding="iso-8859-1"?&gt;
+&lt;!DOCTYPE ... &gt;
+...
+&lt;html&gt;
+&lt;body&gt;
+    Hello, universe!
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</blockquote>
+<h4>3. Model and Principals</h4>
+<p>
+<h5>3.1 Template Parsing</h5>
+Madrone templates are valid XHTML files, and as such are easily represented as a tree. A tag corresponds to a node in the tree: tags which "contain" other tags (as &lt;ul&gt; may contain &lt;li&gt; tags) are interior nodes. Tags which don't contain other tags are leaf nodes. Since there is not a single tag which contains an entire XHTML document, a special node must be defined to serve as the root of the tree.
+</p>
+<p>Template processesing begins with parsing the template into a tree structure. Many tags don't matter to madrone: these are passed over and treated simply as data. We only care about the special madrone-specific tags. Those tags become instances of various madrone Node classes, which make up the nodes of the tree structure.
+</p>
+<p>
+Documents are parsed using the AWP::Parser class. After some setup, invoking the parsefile() method on the Parser instance will return a tree of Nodes ready to be evaluated. The xhtml file included above parses into the tree diagrammed here.
+</p>
+<img src="parsed.png" />
+
+<h5>3.2 Evaluation</h5>
+<p>
+Evaluation is a recursive process which starts at the leaf node: the entire process can be described from the point of view of any one node.  Different node types (see next section) have different behavior at evaluation-time, but the basic idea is the same for all of them, and boils down to
+<ol>
+    <li>modify the context</li>
+    <li>evaluate your children</li>
+    <li>call your callback with a scalar</li>
+</ol>
+
+</p>
+<h5>3.2.1 Modify the Context</h5>
+<p>
+Context is important. In the madrone world, "context" means any data which is request-specific: a user object or a database record for example. Every time a node is asked to evaluate itself, it is passed a hash which represents the context in which it should operate. The context hash originates with the application which is running the template, and by the time any one Node sees it, it may have been modified by any number of enclosing Nodes.
+</p>
+<p>If the node being evaluated might modify the context (by pulling a record out of the database, for example), it needs to do that before the next step- evaluating its children.
+</p>
+<h5>3.2.2 Evaluate your Children</h5>
+<p>
+Many nodes have children, as explained above. If a node has children, it is that node's responsibility to evalute those children. If the children might behave differently in different contexts, then the context must be mutated appropriately before evaluating each child. A child, after being asked to evaluate itself, will eventually return a scalar to the calling node.
+</p>
+<h5>3.2.3 Return</h5>
+<p>When asked to evaluate itself, a Node is passed a callback function which it should use to pass data back to the calling code. If a node has child nodes, it may wait for all its children to return data before collating that data into a scalar and calling its own callback function. (On the other hand, there's no reason a node with children can't call its own callback immediately, and use the data returned from its children for other uses, or nothing at all).
+</p>
+<p>If a node has no children, it generally will just return a scalar representation of itself. Most likely, this is just simple XHTML data in the xhtml namespace, which madrone just treats as scalar data.
+</p>
+<p>Note that the callback should be called with an arrayref. The calling code will eventually <code>join('',@_)</code> the arrayref into a scalar to be returned to the browser.
+</p>
+<h5>3.2.4 The Recursive Nature</h5>
+<p>When the madrone application calls the evaluate method on the root node, it sets in to motion a chain of "evaluate" calls which reach down in to the tree representing the XHTML document. Each node follows the rules above, and eventually an arrayref of scalars of valid XHTML, programmatically generated based on the context of the request, is returned to the application ready for display in the user's browser.
+</p>
+<h4>4. Node Types</h4>
+<h5>4.1 Class Nodes</h5>
+<img src="classnode.png">
+<p>Class Nodes map directly to a method in a class the programmer has defined. In the example,
+<code>&lt;madrone:HelloExample.Hello&gt;</code> is a Class node which, when evaluated, will call the Hello method of the HelloExample class. The method will be passed the list of nodes which make of the children of the <code>&lt;madrone:HelloExample.Hello&gt;</code> tag, which it is responsible for evaluating. Any code the programmer writes to make a dynamic application dynamic will correspond to Class Nodes.
+</p>
+<h5>4.2 Binding Nodes</h5>
+<img src="bindingnode.png">
+<p>
+Binding Nodes implement simple variable substition. A class node may modify the <code>$bindings</code> parameter, which drives the substitutions made by a Binding Node when it is evaluated. The original data in a Binding Node is discarded and replaced by either the empty string or the approprite data in the $bindings hash.  In the example above, <code>&lt;helloExample.audience&gt;</code> is a Binding Node. In that example, the word "world" is replace by the data in <code>$bindings->{HelloExample}->{audience}</code>.
+</p>
+<h5>4.3 Data Node</h5>
+<img src="datanode.png">
+<p>When the parser comes across tags or CDATA which are not special to madrone, it creates a Data Node to hold them. This simple node is always a leaf node in the tree which represents the XHTML file. When asked to evaluate itself, it simply returns the data itself.
+<h5>4.4 Named Node</h5>
+<img src="namednodes.png">
+<p>
+Named Nodes implement cross-template Node pointers. A named node is a Class Node that is registered in a Parser-wide dictionary. At evaluation time, a named node can be "used" by a special node. Evaluation is then passed to the Named Node, even if that Named Node was not defined in the current template. This allows, for example, a common header or footer across multiple templates.
+</p>
+<h4>5. Data from Outside</h4>
+<p>As mentioned, madrone is able to operate in a non-blocking environment. In this environment, it's essential to avoid blocking on IO events. Thankfully, there are a number of libraries which make this easy. In particular, the <a href="http://search.cpan.org/~mlehmann/AnyEvent-5.271/lib/AnyEvent.pm">AnyEvent</a> family of libraries is well-suited for the task. 
+</p>
+<ul>
+    <li><a href="http://search.cpan.org/~mlehmann/AnyEvent-HTTP-1.45/HTTP.pm">AnyEvent::HTTP</a>: an asynchronous HTTP client</li>
+    <li><a href="http://search.cpan.org/~pmakholm/AnyEvent-JSONRPC-0.14/lib/AnyEvent/JSONRPC/HTTP/Client.pm">AnyEvent::JSONRPC</a>: an asynchronous JSON RPC client</li>
+    <li><a href="http://search.cpan.org/~mlehmann/IO-AIO-3.65/AIO.pm">IO::AIO</a>: asynchronous disk access</li>
+    <li><a href="http://github.com/joshuathayer/simplestore">simplestore</a>: a set of simple, disk-based, asynchronous storage classes.</li>
+    <li><a href="http://github.com/joshuathayer/posql">posql</a>: asynchronous mysql client</li>
+<p>
