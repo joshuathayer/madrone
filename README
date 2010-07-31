@@ -1,44 +1,46 @@
 madrone - an XHTML-based template framework
 ===========================================
 
-madrone takes most of its inspiration from Lift, a template framework fo
-r the Scala language (http://liftweb.net/).
+madrone takes most of its inspiration from Lift, a template framework 
+for the Scala language (http://liftweb.net/).
 
-Madrone uses browser-renderable XHTML files as its templates. "Active" e
-lements of pages are wrapped in user-defined XHTML tags. Those tags dire
-ctly map to user code- when the page is evaluated, functions are trigger
-ed which may influence the subsequent rendering of the template.
+Madrone uses browser-renderable XHTML files as its templates. "Active" 
+elements of pages are wrapped in user-defined XHTML tags. Those tags 
+directly map to user code- when the page is evaluated, functions are 
+triggered which may influence the subsequent rendering of the template. 
 
-Madrone is able to operate using a non-blocking model. Template elements
- which use disk or network IO should be carefully programmed to remain n
-on-blocking- judicious use of asynchronous disk, database, and network l
-ibraries should make this easy. Using this model, various elements of ma
-drone templates are evaluated in parallel and should retain good perform
-ance.
+Madrone is able to operate using a non-blocking model. Template 
+elements which use disk or network IO should be carefully programmed to 
+remain non-blocking- judicious use of asynchronous disk, database, and 
+network libraries should make this easy. Using this model, various 
+elements of madrone templates are evaluated in parallel and should 
+retain good performance.
 
 EXAMPLE
 
-This "hello world" example uses two files: templates/example.xhtml and m
-ods/HelloExample.pm.
+This "hello world" example uses two files: templates/example.xhtml and 
+mods/HelloExample.pm.
 
-The .xhtml file is the template- it's valid XHTML, and will render prope
-rly in any browser. You can style the page however you want using includ
-ed CSS files, embed images, include javascript. Your browser will do the
- right thing.
+The .xhtml file is the template- it's valid XHTML, and will render 
+properly in any browser. You can style the page however you want using 
+included CSS files, embed images, include javascript. Your browser will 
+do the right thing.
 
 The template includes tags outside the w3c XHTML namespace. Any madrone 
-template must declare the madrone namespace: tags in the "madrone" names
-pace map to methods in the user-defined modules. This example declares t
-he <madrone:HelloExample> namespace; the tag <madrone:HelloExample.Hello
-> maps to the the function Hello in the HelloExample.pm package.
+template must declare the madrone namespace: tags in the "madrone" 
+namespace map to methods in the user-defined modules. This example 
+declares the <madrone:HelloExample> namespace; the tag 
+<madrone:HelloExample.Hello> maps to the the function Hello in the 
+HelloExample.pm package.  
 
-Additional namespaces may be declared for variable substitution. In this
- example the "helloExample" namespace is declared for that purpose.
+Additional namespaces may be declared for variable substitution. In 
+this example the "helloExample" namespace is declared for that purpose. 
+ 
 
 templates/example.xhtml:
 <?xml version="1.0" encoding="iso-8859-1"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transition//EN" "http://www
-.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transition//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:madrone="http://github.com/joshuathayer/madrone"
@@ -46,12 +48,12 @@ templates/example.xhtml:
 >
 <head>
     <title>hello!</title>
-    <link rel="stylesheet" href="../static/css/style.css" type="text/css
-" />
+    <link rel="stylesheet" href="../static/css/style.css" 
+type="text/css" />
 </head>
 <body>
     <madrone:HelloExample.Hello>
-    Hello, <helloExample.audience>world</helloExample.audience>!
+    Hello, <helloExample:audience>world</helloExample:audience>!
     </madrone:HelloExample.Hello>
 </body>
 </html>
