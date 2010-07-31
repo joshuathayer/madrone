@@ -5,43 +5,60 @@ The typical
     make test
     sudo make install
 
-will properly install madrone on your system. However, madrone as a stand-alone library does not do you much good- you'll probably want to install a number of other modules to create a full madrone application.
+will properly install madrone on your system. However, madrone as a 
+stand-alone library does not do you much good- you'll probably want to 
+install a number of other modules to create a full madrone application.
 
-You may run the madrone-init script in the bin directory to create an example madrone project directory structure, which can be tested and modified at will.
+You may run the madrone-init script in the bin directory to create an 
+example madrone project directory structure, which can be tested and 
+modified at will.
 
     cd bin
     madrone-init ~/projects/HelloWorld/
 
-In order for that application to run, you'll need to install the following:
+In order for that application to run, you'll need to install the 
+following:
 
     Task::Plack 
     Twiggy
     sstrace
 
-Task::Plack is a bundle which installs the Plack implementation of the PSGI framework. Plack exists at http://plackperl.org/ . At that URL, they recommend installing Plack using the cpanm script, which automates installing complicated modules. 
+Task::Plack is a bundle which installs the Plack implementation of the 
+PSGI framework. Plack exists at http://plackperl.org/ . At that URL, 
+they recommend installing Plack using the cpanm script, which automates 
+installing complicated modules. 
 
 Use cpan to install cpanm. The install Plack using:
 
     sudo cpanm Task::Plack
 
-That will take some time, and will install a number of good things including AnyEvent.
+That will take some time, and will install a number of good things 
+including AnyEvent.
 
-Twiggy is a web server which implements the PSGI interface.  Install Twiggy:
+Twiggy is a web server which implements the PSGI interface.  Install 
+Twiggy:
 
     sudo cpanm Twiggy
 
-sstrace is a Plack "middleware" which gives you nice stacktrace error messages when you application dies, and works in asynchronous servers like Twiggy. sstrace exists on github at http://github.com/joshuathayer/sstrace . Install it:
+sstrace is a Plack "middleware" which gives you nice stacktrace error 
+messages when you application dies, and works in asynchronous servers 
+like Twiggy. sstrace exists on github at 
+http://github.com/joshuathayer/sstrace . Install it:
 
     git clone git://github.com/joshuathayer/sstrace.git
     cd sstrace; perl Makefile.pl; sudo make install
 
-sstrace wants a few modules from CPAN (Devel::StackTrace, Devel::StrackTrace::AsHTML, Devel::StackTrace::WithLexicals), which will try to be fetched automatically from CPAN if you don't have them. 
+sstrace wants a few modules from CPAN (Devel::StackTrace, 
+Devel::StrackTrace::AsHTML, Devel::StackTrace::WithLexicals), which 
+will try to be fetched automatically from CPAN if you don't have them. 
 
-At this point, you should be able to create the skeleton application and run it:
+At this point, you should be able to create the skeleton application 
+and run it:
 
     cd bin
     ./madrone-init ~/HelloMadrone
     cd ~/HelloMadrone/bin
     plackup --server Twiggy ./application.psgi
 
-Point your browser to http://localhost:5000/ . You should see "hello universe". Edit at will!
+Point your browser to http://localhost:5000/ . You should see "hello 
+universe". Edit at will!
