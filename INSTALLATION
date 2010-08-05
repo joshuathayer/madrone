@@ -25,15 +25,18 @@ following:
 
 Task::Plack is a bundle which installs the Plack implementation of the 
 PSGI framework. Plack exists at http://plackperl.org/ . At that URL, 
-they recommend installing Plack using the cpanm script, which automates 
-installing complicated modules. 
+they recommend installing Plack using the cpanminus script, which
+automates installing complicated modules. 
 
-Use cpan to install cpanm. The install Plack using:
+Use cpan to install cpanminus. The install Plack using:
 
     sudo cpanm Task::Plack
 
 That will take some time, and will install a number of good things 
 including AnyEvent.
+
+Note that Task::Plack wants to install NET::SSLeay, which needs OpenSSL
+development libraries. Install those as you can.
 
 Twiggy is a web server which implements the PSGI interface.  Install 
 Twiggy:
@@ -51,6 +54,10 @@ http://github.com/joshuathayer/sstrace . Install it:
 sstrace wants a few modules from CPAN (Devel::StackTrace, 
 Devel::StrackTrace::AsHTML, Devel::StackTrace::WithLexicals), which 
 will try to be fetched automatically from CPAN if you don't have them. 
+
+A few more modules you might need to install:
+
+    HTTP::Exception
 
 At this point, you should be able to create the skeleton application 
 and run it:
