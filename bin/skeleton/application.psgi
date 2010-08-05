@@ -8,14 +8,14 @@ use lib ("../mods");
 my $root = "../";
 
 use AnyEvent::Impl::EV;
-use AWP;
-use AWP::Parser;
+use Madrone;
+use Madrone::Parser;
 use Plack::Builder;
 use Plack::Request;
 use Plack::Response;
 use HTTP::Exception;
 
-our $templates = AWP::parseDirectory("$root/templates", "$root/mods");
+our $templates = Madrone::parseDirectory("$root/templates", "$root/mods");
 
 my $app = sub {
     my $env = shift;

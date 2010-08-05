@@ -1,7 +1,7 @@
 use inc::Module::Install;
 
 # Define metadata
-name         'awp';
+name         'madrone';
 author       'Joshua Thayer <joshuamilesthayer@gmail.com>';
 license	     'perl';
 perl_version '5.005';

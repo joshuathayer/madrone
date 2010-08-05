@@ -118,7 +118,7 @@ Madrone templates are valid XHTML files, and as such are easily represented as a
 <p>Template processesing begins with parsing the template into a tree structure. Many tags don't matter to madrone: these are passed over and treated simply as data. We only care about the special madrone-specific tags. Those tags become instances of various madrone Node classes, which make up the nodes of the tree structure.
 </p>
 <p>
-Documents are parsed using the AWP::Parser class. After some setup, invoking the parsefile() method on the Parser instance will return a tree of Nodes ready to be evaluated. The xhtml file included above parses into the tree diagrammed here.
+Documents are parsed using the Madrone::Parser class. After some setup, invoking the parsefile() method on the Parser instance will return a tree of Nodes ready to be evaluated. The xhtml file included above parses into the tree diagrammed here.
 </p>
 <img src="parsed.png" />
 

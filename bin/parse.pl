@@ -5,9 +5,9 @@ use AnyEvent;
 use lib ("../lib/");
 
 use Data::Dumper;
-use AWP::Parser;
+use Madrone::Parser;
 
-my $p = AWP::Parser->new();
+my $p = Madrone::Parser->new();
 $p -> includeMods("subs");
 $p -> parsefile("test.xml");
 print "parse done\n";
