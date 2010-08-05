@@ -1,15 +1,15 @@
-package AWP::GenericNode;
+package Madrone::GenericNode;
 
 use strict;
 use Data::Dumper;
-use AWP::NodeSeq;
+use Madrone::NodeSeq;
 
 sub new {
 	my $class = shift;
 
 	my $self = {};
 
-    $self->{seq} = new AWP::NodeSeq;
+    $self->{seq} = new Madrone::NodeSeq;
 	$self->{out} = [];
 
 	$self->{type} = "generic";

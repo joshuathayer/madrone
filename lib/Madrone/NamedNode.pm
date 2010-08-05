@@ -1,6 +1,6 @@
-package AWP::NamedNode;
+package Madrone::NamedNode;
 
-use base AWP::GenericNode;
+use base Madrone::GenericNode;
 
 # named "chunks" of template that can be used in other templates
 

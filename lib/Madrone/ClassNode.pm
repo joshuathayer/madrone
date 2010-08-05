@@ -1,6 +1,6 @@
-package AWP::ClassNode;
+package Madrone::ClassNode;
 
-use base AWP::GenericNode;
+use base Madrone::GenericNode;
 use Data::Dumper;
 
 use strict;

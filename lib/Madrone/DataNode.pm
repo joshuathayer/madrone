@@ -1,6 +1,6 @@
-package AWP::DataNode;
+package Madrone::DataNode;
 
-use base AWP::GenericNode;
+use base Madrone::GenericNode;
 
 use strict;
 
