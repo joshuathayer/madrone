@@ -1,4 +1,4 @@
-package AWP::NodeSeq;
+package Madrone::NodeSeq;
 
 use strict;
 use Data::Dumper;
@@ -28,7 +28,7 @@ sub grepNodes {
 #       return $self->{cached_searches}->{$term};
 #   }
 
-    my $ret = AWP::NodeSeq->new();
+    my $ret = Madrone::NodeSeq->new();
 
     foreach my $n (@{$self->{nodes}}) {
 
@@ -44,7 +44,7 @@ sub grepNodes {
 
 sub iterator {
     my ($self) = @_;
-    my $itr = AWP::Iterator->new($self);
+    my $itr = Madrone::Iterator->new($self);
     return $itr;
 }
 
@@ -90,7 +90,7 @@ sub walk_all_nodes {
 
 1;
 
-package AWP::Iterator;
+package Madrone::Iterator;
 use strict;
 
 sub new {

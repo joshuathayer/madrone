@@ -1,14 +1,14 @@
-package AWP::Parser;
+package Madrone::Parser;
 
 use strict;
 
 use XML::Parser;
-use AWP::GenericNode;
-use AWP::DataNode;
-use AWP::ClassNode;
-use AWP::BindingNode;
-use AWP::NamedNode;
-use AWP::UseNamedNode;
+use Madrone::GenericNode;
+use Madrone::DataNode;
+use Madrone::ClassNode;
+use Madrone::BindingNode;
+use Madrone::NamedNode;
+use Madrone::UseNamedNode;
 
 sub new {
 	my $class = shift;
@@ -16,7 +16,7 @@ sub new {
 	my $self = {};
 
 	$self->{stack} = [];
-	$self->{root} = AWP::GenericNode->new();
+	$self->{root} = Madrone::GenericNode->new();
 
 	unshift(@{$self->{stack}}, $self->{root});
 	$self->{onSeq} = @{$self->{stack}}[0]->{seq};
@@ -56,7 +56,7 @@ sub new {
 				# we stick it in a hash that can be grabbed anywhere
 
 				# first we make a data node from our current $chunk
-				my $node = AWP::DataNode->new();
+				my $node = Madrone::DataNode->new();
 				$node->setData($self->{chunk});
 
                 #push(@{$self->{onSeq}}, $node);
@@ -74,7 +74,7 @@ sub new {
 				print "create named node! $nodename\n";
 
 				# then make a new node for this func
-				$node = AWP::NamedNode->new();
+				$node = Madrone::NamedNode->new();
 				$node->setName($nodename);
 				$self->{namednodes}->{$nodename} = $node;
 
@@ -91,7 +91,7 @@ sub new {
 				# actually use a name node
 
 				# first we make a data node from our current $chunk
-				my $node = AWP::DataNode->new();
+				my $node = Madrone::DataNode->new();
 				$node->setData($self->{chunk});
 
 				#push(@{$self->{onSeq}}, $node);
@@ -108,7 +108,7 @@ sub new {
 				my $nodename = $ats->{name};
 
 				# then make a new node for this func
-				$node = AWP::UseNamedNode->new($self->{namednodes});
+				$node = Madrone::UseNamedNode->new($self->{namednodes});
 				$node->setName($nodename);
 
 				# put this node at the head of the stack...
@@ -125,7 +125,7 @@ sub new {
 				my $func = $1;
 
 				# it's a control tag. we make a data node from our current $chunk
-				my $node = AWP::DataNode->new();
+				my $node = Madrone::DataNode->new();
 				$node->setData($self->{chunk});
 
                 #push(@{$self->{onSeq}}, $node);
@@ -136,7 +136,7 @@ sub new {
 				#print "instance is $instance (sub $sub)\n";
 
 				# then make a new node for this func
-				$node = AWP::ClassNode->new();
+				$node = Madrone::ClassNode->new();
 				$node->setFunction($func);
 
 				# put this node at the head of the stack...
@@ -153,13 +153,13 @@ sub new {
 				my ($bind_object, $bind_var) = ($1, $2);
 
 				# if there is chunk data, we need to make a note of it
-				my $node = AWP::DataNode->new();
+				my $node = Madrone::DataNode->new();
 				$node->setData($self->{chunk});
 				#push(@{$self->{onSeq}}, $node);
 			    $self->{onSeq}->push($node);
 
 				# make a node for this binding...
-				my $nnode = AWP::BindingNode->new();
+				my $nnode = Madrone::BindingNode->new();
 				$nnode->setBindObject($bind_object);
 				$nnode->setBindVar($bind_var);
 
@@ -207,7 +207,7 @@ sub new {
 
 				# do we have data? if so, we need to make a data node for it...
 				if (length($self->{chunk})) {
-					my $node = AWP::DataNode->new();
+					my $node = Madrone::DataNode->new();
 					$node->setData($self->{chunk});
 					#push(@{$self->{onSeq}}, $node);
 			        $self->{onSeq}->push($node);
@@ -237,7 +237,7 @@ sub new {
 			}
 		},
 		Final => sub {
-			my $node = AWP::DataNode->new();
+			my $node = Madrone::DataNode->new();
 			$node->setData($self->{chunk});
 			 #push(@{$self->{onSeq}}, $node);
 		    $self->{onSeq}->push($node);

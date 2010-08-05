@@ -1,11 +1,11 @@
-package AWP;
+package Madrone;
 
 use strict;
 use Data::Dumper;
 
 =head1 NAME
 
-AWP - An XHTML-based templating system.
+Madrone - An XHTML-based templating system.
 
 =head1 VERSION
 
@@ -33,7 +33,7 @@ sub parseDirectory {
 		my ($tname) = $template =~ /(.*)\.xhtml$/;
 		next unless $tname;
 
-    	my $p = AWP::Parser->new(Style => 'Debug');
+    	my $p = Madrone::Parser->new(Style => 'Debug');
     	$p->setNamedNodes($namednodes);
     	$p->includeMods($modDir);
     	$p->parsefile("$templateDir/$template");
@@ -47,6 +47,6 @@ sub parseDirectory {
 
 =head1 SYNOPSIS
 
-	AWP is a lot like the Lift framework in scala.
+	Madrone is a lot like the Lift framework in scala.
 
 1;
