@@ -15,10 +15,14 @@ Version 0.01
 
 our $VERSION = '0.01';
 
+our $shared;
+sub setShared {
+    my ($k, $v) = @_;
+    $shared->{$k} = $v;
+}
+
 sub parseDirectory {
 	my ($templateDir, $modDir, $namednodes) = @_;
-
-    print "hello $templateDir $modDir\n";
 
     $namednodes = {} unless defined ($namednodes);
 
@@ -33,7 +37,7 @@ sub parseDirectory {
 		my ($tname) = $template =~ /(.*)\.xhtml$/;
 		next unless $tname;
 
-    	my $p = Madrone::Parser->new(Style => 'Debug');
+    	my $p = Madrone::Parser->new(Style => 'Debug', Shared=>$shared);
     	$p->setNamedNodes($namednodes);
     	$p->includeMods($modDir);
     	$p->parsefile("$templateDir/$template");

@@ -31,11 +31,14 @@ sub grepNodes {
     my $ret = Madrone::NodeSeq->new();
 
     foreach my $n (@{$self->{nodes}}) {
-
-        if (($n->{type} eq 'class') and ($n->{'sub'} =~ /$term/)) {
+    
+        if ($n->{type} eq 'class') {
+            if ($n->{'sub'} =~ /$term/) {
+                $ret->push($n);
+            }
+        } else {
             $ret->push($n);
         }
-
     }
 
     $self->{cached_searches}->{$term} = $ret;

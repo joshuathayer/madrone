@@ -11,7 +11,13 @@ use Madrone::NamedNode;
 use Madrone::UseNamedNode;
 
 sub new {
-	my $class = shift;
+    my $class = shift;
+    my %args = (@_);
+
+    my $shared = {};
+    if ($args{"Shared"}) {
+         $shared = $args{Shared};
+    }
 
 	my $self = {};
 
@@ -132,7 +138,7 @@ sub new {
 				$self->{onSeq}->push($node);
 
 				my ($mod, $sub) = $func =~ /(.*)\.(.*)/;
-				my $instance = new $mod;
+				my $instance = $mod->new($shared);
 				#print "instance is $instance (sub $sub)\n";
 
 				# then make a new node for this func
