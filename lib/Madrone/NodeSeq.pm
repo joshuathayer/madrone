@@ -21,8 +21,16 @@ sub length {
     return scalar @{$self->{nodes}};
 }
 
-sub grepNodes {
+# return a nodeseq consitsing of exactly one instance of a subnode of a particular name
+sub oneNode {
     my ($self, $term) = @_;
+
+    return $self->grepNodes($term, 1);
+}
+
+# return a nodeseq consisting of all subnodes of a particular name
+sub grepNodes {
+    my ($self, $term, $justone) = @_;
 
 #if (defined($self->{cached_searches}->{$term})) {
 #       return $self->{cached_searches}->{$term};
@@ -34,6 +42,7 @@ sub grepNodes {
 
         if (($n->{type} eq 'class') and ($n->{'sub'} =~ /$term/)) {
             $ret->push($n);
+            return $ret if $justone;
         }
 
     }
