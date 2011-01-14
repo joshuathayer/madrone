@@ -35,12 +35,13 @@ sub walk {
     # on a copy of our child tree. not on the original,
     # since modifying the original will mutate other user's 
     # tree walks
-    $context->{nodeseq} = $self->{seq}; # XXX COPY COPY COPY
+    my $ns = $self->{seq};
 	$context->{node} = $self;
 
-	# we need to run the function.
+	# the method to call
 	my $sub = $self->{'sub'};
-	$self->{instance}->$sub($context, $bindings, $cb);
+
+	$self->{instance}->$sub($context, $ns, $bindings, $cb);
 }
 
 1;

@@ -23,39 +23,48 @@ sub reset {
 	$self->{out} = [];
 }
 
-# you can give me scalars to stick and beginning and end of my return scalar
-sub walk_and_collect {
+# the only node that will ever call this is the root node.
+# first and last are not used until i can figure out when/why 
+# they might be. jt 1/2011
+sub walk {
 	my ($self, $context, $bindings, $cb, $first, $last) = @_;
 
 	# make tests stop complainig
 	$first = $first ? $first : '';
 	$last = $last ? $last : '';
 
-	my $on = 0;
-    my $seen = $self->{seq}->length;
-    my @out;
+    my $ns = $self->{seq};
+    $ns->walk_all_nodes($context, $bindings, $cb);
 
-# PUT THIS IN NODESEQ
-    my $ni = $self->{seq}->iterator; 
-    while (my $n = $ni->next()) {
-		my $onn = $on;	# need a new lexically-scoped var for the closure
-		$n->walk($context, $bindings, sub {
-			my $dat = shift;
-			$dat = $dat ? $dat : '';
-			$out[$onn] = $dat;
-			if (--$seen == 0) {
-				$cb->( join('', $first, @out, $last) );
-			}
-		});
-
-		$on++;
-	}
+#	my $on = 0;
+#    my $seen = $self->{seq}->length;
+#    my @out;
+#
+#    # this is duplicated in NodeSeq::WalkAllNodes. please unify this.
+#    my $ni = $self->{seq}->iterator; 
+#    while (my $n = $ni->next()) {
+#
+#        # this can probably go outside the while
+#        my $ns = $context->{nodeseq};
+#
+#		my $onn = $on;	# need a new lexically-scoped var for the closure
+#		$n->walk($context, $ns, $bindings, sub {
+#			my $dat = shift;
+#			$dat = $dat ? $dat : '';
+#			$out[$onn] = $dat;
+#			if (--$seen == 0) {
+#				$cb->( join('', $first, @out, $last) );
+#			}
+#		});
+#
+#		$on++;
+#	}
 #### 
 
 }
 
-sub walk {
-	my ($self, $context, $bindings, $cb) = @_;
-	$self->walk_and_collect($context, $bindings, $cb);
+sub walk_no {
+	my ($self, $context, $ns, $bindings, $cb) = @_;
+	$self->walk_and_collect($context, $ns, $bindings, $cb);
 }
 1;

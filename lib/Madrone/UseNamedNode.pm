@@ -29,7 +29,7 @@ sub setName {
 }
 
 sub walk_and_collect {
-	my ($self, $context, $bindings, $cb, $first, $last) = @_;
+	my ($self, $context, $ns, $bindings, $cb, $first, $last) = @_;
 
 	$first = $first ? $first : '';
 	$last = $last ? $last : '';
@@ -47,7 +47,7 @@ sub walk_and_collect {
 	foreach my $n (@$nodes) {
 		my $onn = $on;
 
-		$n->walk($context, $bindings, sub {
+		$n->walk($context, $ns, $bindings, sub {
 			my $dat = shift;
 			$dat = $dat ? $dat : '';
 			$out[$onn] = $dat;

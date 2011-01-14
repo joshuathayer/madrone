@@ -76,20 +76,23 @@ sub walk_all_nodes {
     while (my $n = $iterator->next()) {
         my $onn = $on;  # need a new lexically-scoped var for the closure
 
-        # if we have a sub for this ClassNode, we need to run it...
-        # this allows us to set up bindings different for each sub-tag
+        # if the user has provided a per-subnode callback, call it
+        # here. in this way, user code can modify bindings. note
+        # however that there is no nonblocking interface.
         if (($n->{type} eq 'class') and (defined($per_sub->{ $n->{'sub'} }))) {
             $per_sub->{ $n->{'sub'} }->( $bindings );
         }
 
-        $n->walk($context, $bindings, sub {
+        my $collector = sub {
             my $dat = shift;
             $dat = $dat ? $dat : '';
             $out[$onn] = $dat;
             if (--$len== 0) {
                 $cb->( join('', @out) );
             }
-        });
+        };
+
+        $n->walk($context, $bindings, $collector);
 
         $on++;
     }
@@ -103,10 +106,10 @@ package Madrone::Iterator;
 use strict;
 
 sub new {
-    my ($class, $seq) = @_;
+    my ($class, $nodeseq) = @_;
 
     my $self = {
-        nodeseq => $seq,
+        nodeseq => $nodeseq,
         on => 0,
     };
 
